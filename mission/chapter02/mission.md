@@ -47,14 +47,17 @@
 }
 ```
 ## 홈 화면 조회
-- `GET /members/{memberId}`
+- `GET /api/home`
 ### Path Variable
 
-- `memberId`
+❌
 
 ### Query Param
 
-- `regionName="안암동"`
+- `regionId=1`
+- `cursorDueDate=2026-03-28T23:17:00` (optional)
+- `cursorMissionId=10` (optional)
+- `size=10`
 
 ### Request Header
 
@@ -83,7 +86,7 @@
 						"missionCount" : 7,
 						"missionGoalCount" : 10
 				},
-				"missionList" : {
+				"missionList" : [
 						{
 								"missionId" : 1,
 								"missionDescription" : "10,000 이상의 식사시",
@@ -91,7 +94,8 @@
 								"d_day" : 7,
 								"storeId" : 1,
 								"storeName" : "반이학생마라탕",
-								"storeType" : "중식당"
+								"storeType" : "중식당",
+								"dueDate" : "2027-03-03T23:59:59"
 						},
 						{
 								"missionId" : 2,
@@ -100,15 +104,22 @@
 								"d_day" : 7,
 								"storeId" : 2,
 								"storeName" : "반이학생마라탕",
-								"storeType" : "중식당"
+								"storeType" : "중식당",
+								"dueDate" : "2027-03-03T23:59:59"
 						}
+				],
+				"pageInfo" : {
+					"cursorDueDate" : "2027-03-03T23:59:59",
+					"cursorMissionId" : 10,
+					"hasNext" : true,
+					"size" : 10
 				}
 		}
 }
 ```
 
 ## 마이페이지 리뷰 작성하기
-- `POST /missions/{memberMissionId}/reviews`
+- `POST /member-missions/{memberMissionId}/reviews`
 ### Path Variable
 
 - `memberMissionId`
@@ -151,14 +162,14 @@
 ```
 
 ## 미션 목록 조회(진행 중, 진행 완료)
-- `GET /missions`
+- `GET /member-missions`
 ### Path Variable
 
 ❌
 
 ### Query Param
 
-- `missionStatus=”PENDING”&missionStatus=”COMPLETED”`
+- `missionStatus=PENDING&missionStatus=COMPLETED`
 
 ### Request Header
 
@@ -180,7 +191,7 @@
 				"description" : "나의 미션 목록이 조회되었습니다."
 		},
 		"body" : {
-				"missionList" : {
+				"missionList" : [
 						{
 								"missionId" : 1,
 								"missionDescription" : "10,000 이상의 식사시",
@@ -197,7 +208,7 @@
 								"storeId" : 2,
 								"storeName" : "반이학생마라탕",
 						}
-				}
+				]
 		}
 }
 ```
