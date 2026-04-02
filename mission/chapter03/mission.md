@@ -1,3 +1,8 @@
+## 피어리뷰
+![alt text](assets/review.png)
+- 스프링 AOP에서 프록시 객체를 생성할 때, Join Point 형식에 따라 프록시 생성 방식이 나뉘는 줄 몰랐는데 윤샘이 정리해줘서 처음 알게되었습니다! 더 찾아봐야겠네요!!
+
+## 미션 기록
 ## 클라이언트 요청 흐름
 ![alt text](assets/request.png)
 - doDispatch()함수를 기준으로 요청 흐름을 정리해 보았습니다.
