@@ -634,3 +634,69 @@ public class MatchingConverter {
 따라서 Converter를 별도로 분리하면 **각 계층이 자신의 책임에만 집중**할 수 있고, 변환 로직의 변경에 서비스 로직에 영향을 주지 않아 **유지보수성도 높아지며,** 보일러 플레이트 코드를 줄여 **재사용성을 높인다.**
 
 </aside>
+
+## CQRS 란?
+
+<aside>
+
+**Command & Query Responsibility Segregation**의 약자로 명령과 질의의 책임을 분리한다 라는 뜻이다. 즉, **쓰기를 위한 데이터 모델과 읽기를 위한 데이터 모델을 분리하는 패턴**이다.
+
+</aside>
+
+Command = 시스템의 상태를 변경하는 작업
+
+Query = 시스템의 상태를 조회하는 작업
+
+### 왜 CQRS 패턴을 사용하는가?
+
+아주 단순한 시스템은 상태 변경과 상태 조회가 동일한 모습을 갖지만, 시스템이 복잡해질수록 상태 변경에 사용되는 데이터와 상태 조회에 사용되는 데이터에 차이가 발생한다.
+
+예를 들어, 주문을 생성할 때에는 주문 ID, 회원 ID, 배송지 주소와 같은 데이터를 사용한다. 하지만 주문 정보를 조회할 때에는 회원 이름, 상품명과 같은 데이터를 추가로 사용한다.
+
+```java
+// 주문 생성할 때 필요한 데이터
+class CreateOrderCommand {
+    String userId;
+    List<OrderItem> items;
+    String deliveryAddress;
+}
+```
+
+```java
+// 주문 목록 화면에 보여줄 데이터
+class OrderSummaryView {
+    String orderId;
+    String userName;       // users 테이블에서 JOIN
+    int totalPrice;        // 계산된 값
+    String statusLabel;    // "배송중" 같은 표시용 텍스트
+    String createdAt;
+}
+```
+
+위의 예시와 같이 조회, 쓰기 기능에서 필요한 데이터가 다르다.
+
+**만약 단일 모델을 사용할 경우 조회 기능 때문에 명령 기능이 영향을 받거나, 반대로 명령 기능 때문에 조회 기능이 영향을 받을 수 있다.**
+
+**→ CQRS를 적용함으로써 각 기능에 맞게 모델을 구현할 수 있다.**
+
+### CommandService vs QueryService
+
+CQRS 패턴을 적용하는 방식 중 하나로 **CommandService와 QueryService를 분리할 수 있다.**
+
+**1️⃣ 관심사 분리**
+
+- 쓰기는 검증/트랜잭션/이벤트가 핵심이고, 읽기는 성능/가공이 핵심이기 때문에 같은 클래스에 두면 책임이 뒤섞일 수 있다.
+
+**2️⃣ 변경 이유가 다르다. (SRP)**
+
+- CommandService가 바뀌는 이유 → 비즈니스 정책 변경 (”주문 시 포인트 차감 추가”)
+- QueryService가 바뀌는 이유 → 화면 요구사항 변경 (”목록에 배송 예정일 컬럼 추가”)
+
+**3️⃣ 트랜잭션 전략이 다르다.**
+
+- CommandService → 일반 트랜잭션 (락, 롤백 필요)
+- QueryService → readOnly 트랜잭션 (flush 안 함, 성능 최적화)
+
+**4️⃣ 나중에 물리적 분리 고려**
+
+- 조회용 DB를 분리할 경우 Query Service만 수정하면 된다.
