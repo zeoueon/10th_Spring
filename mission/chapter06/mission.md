@@ -13,3 +13,7 @@
 ## 홈 화면 조회
 
 ![alt text](assets/home.png)
+
+### 피어리뷰
+![alt text](assets/peer1.png)
+![alt text](assets/peer2.png)
